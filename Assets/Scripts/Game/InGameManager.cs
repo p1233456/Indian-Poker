@@ -30,9 +30,11 @@ public class InGameManager : MonoBehaviour
 
     [SerializeField] Transform canvas;
     [SerializeField] GameObject userPanel;
+    Dictionary<string, UsrePanel> panels;
 
     public void SetUser()
     {
+        panels = new Dictionary<string, UsrePanel>();
         var child = canvas.GetComponentsInChildren<Transform>();
 
         foreach (var iter in child)
@@ -43,11 +45,17 @@ public class InGameManager : MonoBehaviour
             }
         }
 
-        foreach (Player user in GameManager.Instace.Players)
+        foreach (KeyValuePair<string,Player> user in GameManager.Instace.Players)
         {
             GameManager.Instace.isnewplayer = false;
             UsrePanel panel = Instantiate(userPanel, canvas).GetComponent<UsrePanel>();
-            panel.UpdateData(user.playerName, user.money.ToString());
+            panel.UpdateData(user.Value.playerName, user.Value.money.ToString());
+            panels.Add(user.Key, panel);
         }
+    }
+
+    public void UpdateUser(string playerName, Player value)
+    {
+        panels[playerName].UpdateData(value.playerName, value.money.ToString(), value.haveCard.ToString());
     }
 }

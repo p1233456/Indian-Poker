@@ -22,18 +22,27 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    List<Player> players;
-    public List<Player> Players { get { return players; } }
+    Dictionary<string, Player> players;
+    public Dictionary<string,Player> Players { get { return players; } }
 
     public bool isnewplayer = false;
-    public void SetPlayer(string[] playerName, bool isme = false)
+    public void SetPlayer(Dictionary<string, string> playerName, bool isme = false)
     {
-        players = new List<Player>();
-        foreach (string player in playerName)
+        players = new Dictionary<string, Player>();
+        foreach (KeyValuePair<string,string> player in playerName)
         {
-            Player tmp = new Player(player);
-            players.Add(tmp);
+            Player tmp = new Player(player.Value);
+            players.Add(player.Key, tmp);
         }
         isnewplayer = true;
+    }
+
+    public void SetCard(Dictionary<string, int> cards)
+    {
+        foreach (KeyValuePair<string,int> card in cards)
+        {
+            players[card.Key].haveCard = card.Value;
+            InGameManager.Instace.UpdateUser(card.Key, players[card.Key]);
+        }
     }
 }

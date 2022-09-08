@@ -91,16 +91,43 @@ public class Client : MonoBehaviour
                 case "200":
                     Debug.Log(data.code);
                     Debug.Log(data.data);
-                    string[] users =  data.data.Replace("\"", "").Replace("\'","").Replace("[","").Replace("]","").Replace(",", "\t").Split('\t');
-                    GameManager.Instace.SetPlayer(users);
+                    string[] users =  data.data.Replace("\"", "").Replace("\'","").Replace("[","").Replace("]","").Replace("{", "").Replace("}", "").Replace(",", "\t").Split('\t');
+                    Dictionary<string, string> keyValuePairs2 = new Dictionary<string, string>();
+                    foreach (string card in users)
+                    {
+                        string userid = card.Split(':')[0];
+                        string username = card.Split(':')[1];
+                        keyValuePairs2.Add(userid, username);
+                    }
+                    GameManager.Instace.SetPlayer(keyValuePairs2);
                     login = true;
+                    break;
+                case "202":
+                    Debug.Log(data.code);
+                    Debug.Log(data.data);
+                    string[] cards = data.data.Replace("\"", "").Replace("'", "").Replace("[", "").Replace("]", "").Replace("{","").Replace("}","").Replace(",", "\t").Split('\t');
+                    Dictionary<string, int> keyValuePairs = new Dictionary<string, int>();
+                    foreach (string card in cards)
+                    {
+                        string user = card.Split(':')[0];
+                        Debug.Log(card.Split(':')[1]);
+                        int n = int.Parse(card.Split(':')[1].Trim());
+                        keyValuePairs.Add(user, n);
+                    }
+                    GameManager.Instace.SetCard(keyValuePairs);
                     break;
             }
         }
         catch
         {
-            Debug.Log("잘못된 프로토콜");
+            Debug.Log("잘못된 프로토콜");  
             return;
         }
+    }
+
+    private void OnApplicationQuit()
+    {
+        tc.Close();
+        stream.Close();
     }
 }
